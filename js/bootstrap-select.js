@@ -846,6 +846,7 @@
   Selectpicker.DEFAULTS = {
     noneSelectedText: 'Nothing selected',
     noneResultsText: 'No results matched {0}',
+    addItemText: 'Add {0} to options',
     countSelectedText: function (numSelected, numTotal) {
       return (numSelected == 1) ? '{0} item selected' : '{0} items selected';
     },
@@ -2570,7 +2571,8 @@
 
     liveSearchListener: function () {
       var that = this,
-          noResults = document.createElement('li');
+          noResults = document.createElement('li'),
+          addItem = document.createElement('li');
 
       this.$button.on('click.bs.dropdown.data-api', function () {
         if (!!that.$searchbox.val()) {
@@ -2643,6 +2645,13 @@
             noResults.className = 'no-results';
             noResults.innerHTML = that.options.noneResultsText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
             that.$menuInner[0].firstChild.appendChild(noResults);
+            addItem.className = 'no-results';
+            addItem.onclick = function (e) {
+              e.stopPropagation();
+              that.selectpicker.dispatchEvent(new CustomEvent('add-item', { 'detail': searchValue }));
+            }
+            addItem.innerHTML = that.options.addItemText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
+            that.$menuInner[0].firstChild.appendChild(addItem);
           }
         } else {
           that.$menuInner.scrollTop(0);
