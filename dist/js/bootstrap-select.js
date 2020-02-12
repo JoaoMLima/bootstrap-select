@@ -865,7 +865,7 @@
   Selectpicker.DEFAULTS = {
     noneSelectedText: 'Nothing selected',
     noneResultsText: 'No results matched {0}',
-    addItemText: 'Add {0} to options',
+    addItemText: 'Add {0} to selected options',
     countSelectedText: function (numSelected, numTotal) {
       return (numSelected == 1) ? '{0} item selected' : '{0} items selected';
     },
@@ -2593,7 +2593,8 @@
               cache = {},
               cacheArr = [],
               searchStyle = that._searchStyle(),
-              normalizeSearch = that.options.liveSearchNormalize;
+              normalizeSearch = false,
+              perfectMatch = false;
 
           if (normalizeSearch) q = normalizeToBase(q);
 
@@ -2617,6 +2618,8 @@
 
               cache[li.lastIndex + 1] = true;
             }
+
+            if (cache[i] && li.display.length == q.length) perfectMatch = true; 
 
             if (cache[i] && li.type !== 'optgroup-label') cacheArr.push(i);
           }
@@ -2643,19 +2646,20 @@
             noResults.className = 'no-results';
             noResults.innerHTML = that.options.noneResultsText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
             that.$menuInner[0].firstChild.appendChild(noResults);
-            //not created style yet
+          }
+
+          if (!perfectMatch) {
+            addItem.setAttribute("style", "cursor: pointer");
             addItem.className = 'no-results';
+            addItem.innerHTML = '<i class="fa fa-plus" style="color: #007bff; margin: 0 5px;"></i> '+ that.options.addItemText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
             addItem.onclick = function (e) {
               e.stopPropagation();
-              console.log(that);
-              var newItem = document.createElement('option');
-              newItem.innerHTML = searchValue;
-              that.$element[0].appendChild(newItem);
-              that.$element[0].dispatchEvent(new CustomEvent('add-item', { 'detail': searchValue }));
-              //trying to call refresh again
-              that.$searchbox.dispatchEvent(new Event('input'));
+              that.$element.append('<option>'+searchValue+'</option>');
+              that.$element.selectpicker("refresh");
+              let selectedList = that.val();
+              selectedList.push(searchValue);
+              that.val(selectedList);
             }
-            addItem.innerHTML = that.options.addItemText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
             that.$menuInner[0].firstChild.appendChild(addItem);
           }
         } else {
