@@ -1280,10 +1280,6 @@
 
           that.setOptionStatus();
 
-          // if searching, check to make sure the list has actually been updated before updating DOM
-          // this prevents unnecessary repaints
-          if (isSearching || (isVirtual === false && init)) menuIsDifferent = !isEqual(previousElements, that.selectpicker.view.visibleElements);
-
           // if virtual scroll is disabled and not searching,
           // menu should never need to be updated more than once
           if ((init || isVirtual === true) && menuIsDifferent) {
@@ -1986,7 +1982,7 @@
       }
 
       if (this.options.size === 'auto') {
-        _minHeight = this.selectpicker.current.elements.length > 3 ? this.sizeInfo.liHeight * 3 + this.sizeInfo.menuExtras.vert - 2 : 0;
+        _minHeight = 0;
         menuHeight = this.sizeInfo.selectOffsetBot - this.sizeInfo.menuExtras.vert;
         minHeight = _minHeight + headerHeight + searchHeight + actionsHeight + doneButtonHeight;
         menuInnerMinHeight = Math.max(_minHeight - menuPadding.vert, 0);
@@ -2580,7 +2576,7 @@
         e.stopPropagation();
       });
 
-      this.$searchbox.on('input propertychange', function () {
+      this.$searchbox.on('input propertychange', function updateSelect() {
         var searchValue = that.$searchbox.val();
 
         that.selectpicker.search.elements = [];
@@ -2659,6 +2655,7 @@
               let selectedList = that.val();
               selectedList.push(searchValue);
               that.val(selectedList);
+              updateSelect();
             }
             that.$menuInner[0].firstChild.appendChild(addItem);
           }
