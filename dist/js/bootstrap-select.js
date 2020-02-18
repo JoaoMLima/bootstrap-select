@@ -865,7 +865,7 @@
   Selectpicker.DEFAULTS = {
     noneSelectedText: 'Nothing selected',
     noneResultsText: 'No results matched {0}',
-    addItemText: 'Add {0} to selected options',
+    addItemText: 'Add {0} to options',
     countSelectedText: function (numSelected, numTotal) {
       return (numSelected == 1) ? '{0} item selected' : '{0} items selected';
     },
@@ -2652,9 +2652,6 @@
               e.stopPropagation();
               that.$element.append('<option>'+searchValue+'</option>');
               that.$element.selectpicker("refresh");
-              let selectedList = that.val();
-              selectedList.push(searchValue);
-              that.val(selectedList);
               updateSelect();
             }
             that.$menuInner[0].firstChild.appendChild(addItem);
